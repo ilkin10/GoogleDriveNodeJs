@@ -18,6 +18,9 @@ export default function Login() {
       if(result.data === "Success"){
         navigate('/home')
       }
+      else{
+        alert("Login Or Password Is InCorrect") // Qeseng Alert Olsun
+      }
     })
     .catch(error => console.log(error))
 

@@ -21,7 +21,6 @@ app.post('/login',(req,res) =>{
             }
             else{
                 res.json("The Password Is Incorrect")
-                alert("The Password Is InCorrect")
             }
         }
         else{
@@ -31,12 +30,25 @@ app.post('/login',(req,res) =>{
 })
 
 
-app.post('/signup',(req,res) =>{
-    UserModel.create(req.body)
-    .then(users => res.json(users))
-    .catch(err => res.json(err))
-})
-
+app.post('/signup', async (req, res) => {
+    const { email } = req.body;
+  
+    try {
+      // Check if the user already exists
+      const existingUser = await UserModel.findOne({ email });
+  
+      if (existingUser) {
+        res.json("User with this email already exists");
+      } else {
+        // If the user doesn't exist, create a new user
+        const newUser = await UserModel.create(req.body);
+        res.json(newUser);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
 
 app.listen(3001,()=>{
     console.log("Server Is Running")

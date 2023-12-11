@@ -15,7 +15,12 @@ export default function SignUp() {
 
     axios.post('http://localhost:3001/signup',{name,email,password})
     .then(result => {console.log(result)
-    navigate('/')
+      if(result.data !== "User with this email already exists"){
+        navigate('/')
+      }
+      else{
+        alert("This User Already Exists")
+      }
     })
     .catch(error => console.log(error))
 
