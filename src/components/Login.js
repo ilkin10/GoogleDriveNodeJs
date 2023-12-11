@@ -2,30 +2,25 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
-
-export default function Login() {
-
+export default function Login({ changeSignedInStatus }) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const navigate = useNavigate();
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    axios.post('http://localhost:3001/login',{email,password})
-    .then(result => {console.log(result)
-      if(result.data === "Success"){
-        navigate('/home')
-      }
-      else{
-        alert("Login Or Password Is InCorrect") // Qeseng Alert Olsun
-      }
-    })
-    .catch(error => console.log(error))
-
-  }
-
+    axios
+      .post("http://localhost:3001/login", { email, password })
+      .then((result) => {
+        console.log(result);
+        if (result.data === "Success") {
+          changeSignedInStatus(true);
+        } else {
+          alert("Login Or Password Is InCorrect"); // Qeseng Alert Olsun
+        }
+      })
+      .catch((error) => console.log(error));
+  };
 
   return (
     <div>
@@ -48,7 +43,7 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <input type="submit" value="Login" className="btn btn-primary button"/>
+        <input type="submit" value="Login" className="btn btn-primary button" />
       </form>
       <h6 style={{ marginTop: 20 }}>
         Don't have an account?

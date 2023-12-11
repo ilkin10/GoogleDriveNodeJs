@@ -3,23 +3,38 @@ import Login from "./components/Login";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SignUp from "./components/Signup";
 import MainUI from "./components/mainUI/MainUI";
+import { useState } from "react";
+
+function Item() {
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  function changeSignedInStatus(isLogged) {
+    setIsSignedIn(isLogged);
+  }
+  if (isSignedIn) {
+    return <MainUI></MainUI>;
+  }
+  return (
+    <header className="App-header">
+      <b className="title">Welcome To Our Drive</b>
+      <br></br>
+      <Routes>
+        <Route
+          exact
+          path="/"
+          element={<Login changeSignedInStatus={changeSignedInStatus} />}
+        />
+        <Route exact path="/signup" element={<SignUp />} />
+      </Routes>
+    </header>
+  );
+}
+
 function App() {
   return (
     <Router>
       <div className="App">
-        <header className="App-header">
-          <b className="title">Welcome To Our Drive</b>
-          <br></br>
-        <Routes>
-          <Route exact path="/"  element={<Login/>} />
-          <Route exact path="/home"  element={<MainUI/>} />
-          <Route exact path="/signup" element={<SignUp/>} />
-        </Routes>
-        
-
-        </header>
-
-        {/* <MainUI></MainUI> */}
+        <Item></Item>
       </div>
     </Router>
   );
