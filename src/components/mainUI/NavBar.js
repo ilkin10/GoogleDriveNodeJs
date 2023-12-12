@@ -11,6 +11,7 @@ export default function NavBar() {
         <Link to={"/sharedfiles"} className="button">Shared with me</Link>
       </div>
       <Link to={"/addfile"} className="addButton">Add File +</Link>
+      <Link to={"/addfolder"} className="button">Add Folder +</Link>
     </div>
   );
 }

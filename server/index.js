@@ -2,6 +2,10 @@ const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
 const UserModel = require('./models/User')
+const FileModel = require('./models/File')
+const FolderForDb = require('./models/FolderForDb')
+
+
 const app = express()
 app.use(express.json())
 
