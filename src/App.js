@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SignUp from "./components/Signup";
 import MainUI from "./components/mainUI/MainUI";
 import { useState } from "react";
-import AddFolder from "./components/mainUI/AddFolder";
 
 function Item() {
   const [isSignedIn, setIsSignedIn] = useState(false);

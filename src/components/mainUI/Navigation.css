@@ -7,7 +7,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* Center the items with space around them */
 }
 
 .logo {
@@ -36,9 +35,7 @@
 
 .button:hover {
     background-color: #2980b9;
-    /* Darker shade on hover */
     transform: scale(1.05);
-    /* Slight scale increase on hover for a subtle effect */
 }
 
 .addButton {
@@ -52,13 +49,10 @@ background-color: #3498db;
     cursor: pointer;
     color: #ffffff;
     border-radius: 20px;
-    transition: background-color 0.3s ease, transform 0.3s ease;    
-    /* Smooth transition for text color on hover */
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .addButton:hover {
     background-color: #2980b9;
-        /* Darker shade on hover */
         transform: scale(1.05);
-        /* Slight scale increase on hover for a subtle effect */
 }   

@@ -1,0 +1,73 @@
+.file {
+  height: 40px;
+  width: 340px;
+  background-color: #f8d7da;
+  display: inline-block;
+  border: 1px solid #dc3545;
+  border-radius: 8px;
+  margin: 20px;
+  margin-top: 5px;
+  position: relative;
+}
+.file:hover{
+    cursor:default;
+}
+.file > h3 {
+  display: inline-block;
+  height: auto;
+  margin: 0;
+  color: #721c24;
+}
+
+.file > img {
+  width: 27px;
+  height: 32px;
+  margin: 0 5px;
+  vertical-align: middle;
+  padding-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.file > img:hover {
+  transform: scale(1.2);
+}
+
+.file > img:active {
+  transform: scale(0.8);
+}
+
+.file-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #e15757;
+  border: 1px solid #ccc;
+  width: 100%;
+  padding: 10px;
+  display: none;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1; /* Adjust the stacking order as needed */
+}
+
+.file-options button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  border: none;
+  background-color: #7b1b1b;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.file-options button:hover {
+  background-color: #0056b3;
+}
+
+.file:hover .file-options {
+  display: block;
+}
+

@@ -1,9 +1,19 @@
 import React from 'react'
+import Folder from '../Folder'
 
 export default function MyFiles() {
   return (
     <div>
-      My Files
+      <Folder></Folder>
+      <Folder></Folder>
+      <Folder></Folder>
+      <Folder></Folder>
+      <Folder></Folder>
+      <Folder></Folder>
+      <Folder></Folder>
+      <Folder></Folder>
+      <Folder></Folder>
+      <Folder></Folder>
     </div>
   )
 }
