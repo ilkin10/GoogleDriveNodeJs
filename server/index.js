@@ -14,6 +14,33 @@ app.use(cors())
 
 mongoose.connect("mongodb://127.0.0.1:27017/GoogleDriveDB")
 
+app.post('/addFolder', (req, res) => {
+  const { folderName, userId } = req.body;
+
+  try {
+    if (folderName && folderName.trim() !== "" && userId) {
+      // Check if the user exists
+      const user = UserModel.findById(userId);
+      if (!user) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+
+      // Create a new folder using the Mongoose model
+      const newFolder = FolderForDb.create({
+        name: folderName,
+        owner: userId,
+      });
+
+      res.status(201).json({ success: true, folder: newFolder });
+    } else {
+      res.status(400).json({ success: false, error: 'Invalid folder name or user ID' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+
 
 app.post('/login',(req,res) =>{
     const {email,password} = req.body;
@@ -32,6 +59,8 @@ app.post('/login',(req,res) =>{
         }
     })
 })
+
+
 
 
 app.post('/signup', async (req, res) => {
