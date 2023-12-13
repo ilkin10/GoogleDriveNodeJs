@@ -4,7 +4,7 @@ import dots from "../images/icons8-menu-vertical-64.png";
 import "./Folder.css";
 import File from "./File";
 
-export default function Folder() {
+export default function Folder({folder}) {
   const [isFilesOpen, setIsFilesOpen] = useState(false);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
@@ -19,7 +19,7 @@ export default function Folder() {
   return (
     <div className="folder">
       <img src={folderIcon} alt="foldericon" onClick={toggleFiles}></img>
-      <h2 onClick={toggleFiles}>Salam men faylam</h2>
+      <h2 onClick={toggleFiles}>{folder.name}</h2>
       <img src={dots} alt="dots" onClick={toggleSideMenu}></img>
 
       {isFilesOpen && (

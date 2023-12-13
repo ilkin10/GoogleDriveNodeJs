@@ -1,19 +1,12 @@
 import React from 'react'
-import Folder from '../Folder'
+import FolderList from "../FolderList"
+
 
 export default function MyFiles() {
   return (
     <div>
-      <Folder></Folder>
-      <Folder></Folder>
-      <Folder></Folder>
-      <Folder></Folder>
-      <Folder></Folder>
-      <Folder></Folder>
-      <Folder></Folder>
-      <Folder></Folder>
-      <Folder></Folder>
-      <Folder></Folder>
+      <FolderList></FolderList>
+     
     </div>
   )
 }

@@ -48,6 +48,21 @@ app.post("/addFolder", async (req, res) => {
 });
 
 
+// New route to get all folders
+app.get("/getFolders", async (req, res) => {
+  try {
+    // Retrieve all folders from the database
+    const folders = await FolderForDb.find();
+
+    // Respond with the list of folders
+    res.json(folders);
+  } catch (error) {
+    console.error("Error fetching folders:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   UserModel.findOne({ email: email }).then((user) => {
