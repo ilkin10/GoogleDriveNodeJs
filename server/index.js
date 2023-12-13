@@ -18,17 +18,14 @@ app.delete("/deleteFolder/:id", async (req, res) => {
   const folderId = req.params.id;
 
   try {
-    // Check if the folder with the given ID exists
     const existingFolder = await FolderForDb.findById(folderId);
 
     if (!existingFolder) {
       return res.status(404).json({ error: "Folder not found" });
     }
 
-    // Delete the folder from the database
     await FolderForDb.deleteOne({ _id: folderId });
 
-    // Respond with a success message or any other relevant information
     res.json({ message: "Folder deleted successfully" });
   } catch (error) {
     console.error("Error deleting folder:", error);
@@ -41,29 +38,24 @@ app.delete("/deleteFolder/:id", async (req, res) => {
 app.post("/addFolder", async (req, res) => {
   try {
     const { folderName } = req.body;
-    const userId = globalUserID; // Assuming you have session middleware
+    const userId = globalUserID;
 
-    // Validate if the folder name and userId are provided
     if (!folderName || !userId) {
       return res.status(400).json({ error: userId });
     }
 
-    // Check if the user with the given userId exists
     const existingUser = await UserModel.findById(userId);
     if (!existingUser) {
       return res.status(400).json({ error: "User not found" });
     }
 
-    // Check if the folder with the same name and userId already exists
     const existingFolder = await FolderForDb.findOne({ name: folderName});
     if (existingFolder) {
       return res.status(400).json({ error: "Folder with this name already exists for the user" });
     }
 
-    // Create a new folder
     const newFolder = await FolderForDb.create({ name: folderName, owner: userId });
 
-    // Respond with success message or any other relevant information
     res.json({ message: "Folder added successfully", folder: newFolder });
   } catch (error) {
     console.error(error);
@@ -72,13 +64,10 @@ app.post("/addFolder", async (req, res) => {
 });
 
 
-// New route to get all folders
 app.get("/getFolders", async (req, res) => {
   try {
-    // Retrieve all folders from the database
     const folders = await FolderForDb.find({owner:globalUserID});
 
-    // Respond with the list of folders
     res.json(folders);
   } catch (error) {
     console.error("Error fetching folders:", error);
@@ -91,7 +80,7 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   UserModel.findOne({ email: email }).then((user) => {
     if (user) {
-      globalUserID = user._id; // Store user ID in the sessio
+      globalUserID = user._id; 
       if (user.password === password) {
         res.json("Success");
       } else {
@@ -107,13 +96,11 @@ app.post("/signup", async (req, res) => {
   const { email } = req.body;
 
   try {
-    // Check if the user already exists
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
       res.json("User with this email already exists");
     } else {
-      // If the user doesn't exist, create a new user
       const newUser = await UserModel.create(req.body);
       res.json(newUser);
     }
