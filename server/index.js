@@ -52,7 +52,7 @@ app.post("/addFolder", async (req, res) => {
 app.get("/getFolders", async (req, res) => {
   try {
     // Retrieve all folders from the database
-    const folders = await FolderForDb.find();
+    const folders = await FolderForDb.find({owner:globalUserID});
 
     // Respond with the list of folders
     res.json(folders);
