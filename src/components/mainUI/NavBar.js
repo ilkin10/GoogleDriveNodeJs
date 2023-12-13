@@ -10,7 +10,7 @@ export default function NavBar() {
         <Link to={"/"} className="button"> My Files</Link>
         <Link to={"/sharedfiles"} className="button">Shared with me</Link>
       </div>
-      <Link to={"/addfile"} className="addButton">Add File +</Link>
+      <Link to={"/addfile"} className="addButton">Add Folder +</Link>
     </div>
   );
 }

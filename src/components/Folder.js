@@ -36,6 +36,7 @@ export default function Folder({folder}) {
           {/* Options for the side menu */}
           <p>Delete</p>
           <p>Properties</p>
+          <p>Add File</p>
           {/* ... */}
         </div>
       )}
