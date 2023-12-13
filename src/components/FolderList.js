@@ -4,12 +4,18 @@ import "./Folder.css"; // Ensure you have the appropriate styles for the Folder 
 import Folder from "./Folder"; // Import the Folder component
 
 export default function FolderList() {
-  const [folders, setFolders] = useState([]);
 
   useEffect(() => {
     // Fetch folders when the component mounts
     fetchFolders();
   }, []); // Empty dependency array ensures it only runs once on mount
+
+  const [folders, setFolders] = useState([]); // Your initial folders state
+
+  const handleDelete = (deletedFolderId) => {
+    // Update state to remove the deleted folder
+    setFolders((prevFolders) => prevFolders.filter(folder => folder._id !== deletedFolderId));
+  };
 
   const fetchFolders = async () => {
     try {
@@ -24,7 +30,7 @@ export default function FolderList() {
     <div className="folder-list">
       {/* Display your folders here */}
       {folders.map((folder) => (
-        <Folder key={folder._id} folder={folder} />
+        <Folder key={folder._id} onDelete={handleDelete} folder={folder} />
       ))}
     </div>
   );

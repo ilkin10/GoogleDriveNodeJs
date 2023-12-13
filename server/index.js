@@ -14,6 +14,30 @@ mongoose.connect("mongodb://127.0.0.1:27017/GoogleDriveDB");
 
 let globalUserID = "";
 
+app.delete("/deleteFolder/:id", async (req, res) => {
+  const folderId = req.params.id;
+
+  try {
+    // Check if the folder with the given ID exists
+    const existingFolder = await FolderForDb.findById(folderId);
+
+    if (!existingFolder) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    // Delete the folder from the database
+    await FolderForDb.deleteOne({ _id: folderId });
+
+    // Respond with a success message or any other relevant information
+    res.json({ message: "Folder deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting folder:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 app.post("/addFolder", async (req, res) => {
   try {
     const { folderName } = req.body;
