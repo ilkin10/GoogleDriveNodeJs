@@ -4,10 +4,12 @@ import folderIcon from "../images/folderIcon.png";
 import dots from "../images/icons8-menu-vertical-64.png";
 import "./Folder.css";
 import File from "./File";
+import AddFolder from "./AddFolder"; // Assuming you have an AddFolder component
 
 export default function Folder({ folder, onDelete }) {
   const [isFilesOpen, setIsFilesOpen] = useState(false);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [isAddFileDialogOpen, setIsAddFileDialogOpen] = useState(false);
 
   const toggleFiles = () => {
     setIsFilesOpen(!isFilesOpen);
@@ -23,7 +25,7 @@ export default function Folder({ folder, onDelete }) {
       console.error("Folder ID is missing");
       return;
     }
-  
+
     try {
       // Make a DELETE request to the server to delete the folder by ID
       await axios.delete(`http://localhost:3001/deleteFolder/${folder._id}`);
@@ -32,6 +34,14 @@ export default function Folder({ folder, onDelete }) {
     } catch (error) {
       console.error("Error deleting folder:", error);
     }
+  };
+
+  const openAddFileDialog = () => {
+    setIsAddFileDialogOpen(true);
+  };
+
+  const closeAddFileDialog = () => {
+    setIsAddFileDialogOpen(false);
   };
 
   return (
@@ -56,8 +66,19 @@ export default function Folder({ folder, onDelete }) {
             Delete Folder
           </button>
           <button className="btn btn-primary button">Properties</button>
-          <button className="btn btn-success button">Add File</button>
+          <button
+            className="btn btn-success button"
+            onClick={openAddFileDialog}
+          >
+            Add File
+          </button>
           {/* ... */}
+        </div>
+      )}
+
+      {isAddFileDialogOpen && (
+        <div className="add-file-dialog">
+          <AddFolder onClose={closeAddFileDialog} />
         </div>
       )}
     </div>

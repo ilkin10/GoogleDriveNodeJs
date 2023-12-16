@@ -1,0 +1,34 @@
+/* Filename - AddFolder.css */
+
+.add-folder-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.file-input-container {
+  margin: 20px;
+}
+
+
+.custom-file-input {
+    text-decoration: none;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.custom-file-input:hover {
+  background-color: #0056b3;
+}
+
+.file-details {
+  margin-top: 20px;
+}
+
+.choose-message {
+  margin-top: 20px;
+  color: #888;
+}
