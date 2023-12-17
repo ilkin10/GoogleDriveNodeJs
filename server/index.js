@@ -1,6 +1,8 @@
+// Import necessary modules
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const multer = require("multer");
 const UserModel = require("./models/User");
 const FileModel = require("./models/File");
 const FolderForDb = require("./models/FolderForDb");
@@ -9,9 +11,126 @@ const app = express();
 app.use(express.json());
 
 app.use(cors());
-mongoose.connect("mongodb://127.0.0.1:27017/GoogleDriveDB");
+mongoose.connect("mongodb://127.0.0.1:27017/GoogleDriveDB"); 
 
 let globalUserID = "";
+
+// Set up Multer storage for file uploads
+const storage = multer.memoryStorage(); // Store the file in memory
+const upload = multer({ storage: storage });
+
+// Assuming you have a route to delete a file by ID
+app.delete("/deleteFile/:id", async (req, res) => {
+  const fileId = req.params.id;
+
+  try {
+    // Find the file by ID
+    const existingFile = await FileModel.findById(fileId);
+
+    if (!existingFile) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // Find the folder that contains the file
+    const existingFolder = await FolderForDb.findById(existingFile.folderId);
+
+    if (!existingFolder) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    // Remove the file from the folder's files array
+    existingFolder.files = existingFolder.files.filter((file) => file.toString() !== fileId);
+
+    // Delete the file
+    await FileModel.deleteOne({ _id: fileId });
+
+    // Save the updated folder
+    await existingFolder.save();
+
+    res.json({ message: "File deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+app.get("/getFiles", async (req, res) => {
+  try {
+    const folderId = req.query.folderId;
+
+    if (!folderId) {
+      return res.status(400).json({ error: "Folder ID is missing" });
+    }
+
+    // Find the folder by ID
+    const existingFolder = await FolderForDb.findById(folderId);
+
+    if (!existingFolder) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    // Populate the files array with details from the files collection
+    const populatedFiles = await FileModel.find({ _id: { $in: existingFolder.files } });
+
+    res.json(populatedFiles);
+  } catch (error) {
+    console.error("Error fetching files:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/uploadFile", upload.single("file"), async (req, res) => {
+  try {
+    const { originalname, mimetype, buffer } = req.file;
+
+    // Assuming you have a folder ID in the request body
+    const { folderId } = req.body;
+
+    if (!folderId) {
+      return res.status(400).json({ error: "Folder ID is missing" });
+    }
+
+    // Check if the folder exists
+    const existingFolder = await FolderForDb.findById(folderId);
+    if (!existingFolder) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    // Check if a file with the same name already exists in the folder
+    const existingFileInFolder = await FileModel.findOne({
+      name: originalname,
+      folderId: folderId,
+    });
+
+    if (existingFileInFolder) {
+      return res
+        .status(400)
+        .json({ message: "File with this name already exists in the folder" });
+    }
+
+    // Create a new file document
+    const newFile = new FileModel({
+      name: originalname,
+      type: mimetype,
+      data: buffer,
+      owner: globalUserID,
+      folderId: folderId,
+    });
+
+    // Save the file to the database
+    await newFile.save();
+    existingFolder.files.push(newFile);
+    await existingFolder.save();
+    res.status(200).json({ message: "File uploaded successfully" });
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 app.delete("/deleteFolder/:id", async (req, res) => {
   const folderId = req.params.id;
@@ -23,14 +142,21 @@ app.delete("/deleteFolder/:id", async (req, res) => {
       return res.status(404).json({ error: "Folder not found" });
     }
 
+    const fileIds = existingFolder.files;
+
+    for (const fileId of fileIds) {
+      await FileModel.deleteOne({ _id: fileId });
+    }
+
     await FolderForDb.deleteOne({ _id: folderId });
 
-    res.json({ message: "Folder deleted successfully" });
+    res.json({ message: "Folder and associated files deleted successfully" });
   } catch (error) {
     console.error("Error deleting folder:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 
 
