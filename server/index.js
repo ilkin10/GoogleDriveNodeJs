@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors());
-mongoose.connect("mongodb://127.0.0.1:27017/GoogleDriveDB"); 
+mongoose.connect("mongodb://127.0.0.1:27017/GoogleDriveDB");
 
 let globalUserID = "";
 
@@ -39,7 +39,9 @@ app.delete("/deleteFile/:id", async (req, res) => {
     }
 
     // Remove the file from the folder's files array
-    existingFolder.files = existingFolder.files.filter((file) => file.toString() !== fileId);
+    existingFolder.files = existingFolder.files.filter(
+      (file) => file.toString() !== fileId
+    );
 
     // Delete the file
     await FileModel.deleteOne({ _id: fileId });
@@ -53,8 +55,6 @@ app.delete("/deleteFile/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 app.get("/getFiles", async (req, res) => {
   try {
@@ -72,7 +72,9 @@ app.get("/getFiles", async (req, res) => {
     }
 
     // Populate the files array with details from the files collection
-    const populatedFiles = await FileModel.find({ _id: { $in: existingFolder.files } });
+    const populatedFiles = await FileModel.find({
+      _id: { $in: existingFolder.files },
+    });
 
     res.json(populatedFiles);
   } catch (error) {
@@ -80,9 +82,6 @@ app.get("/getFiles", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
-
 
 app.get("/getUsers", async (req, res) => {
   try {
@@ -93,7 +92,6 @@ app.get("/getUsers", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 app.post("/uploadFile", upload.single("file"), async (req, res) => {
   try {
@@ -144,8 +142,6 @@ app.post("/uploadFile", upload.single("file"), async (req, res) => {
   }
 });
 
-
-
 app.delete("/deleteFolder/:id", async (req, res) => {
   const folderId = req.params.id;
 
@@ -171,9 +167,6 @@ app.delete("/deleteFolder/:id", async (req, res) => {
   }
 });
 
-
-
-
 app.post("/addFolder", async (req, res) => {
   try {
     const { folderName } = req.body;
@@ -188,12 +181,17 @@ app.post("/addFolder", async (req, res) => {
       return res.status(400).json({ error: "User not found" });
     }
 
-    const existingFolder = await FolderForDb.findOne({ name: folderName});
+    const existingFolder = await FolderForDb.findOne({ name: folderName });
     if (existingFolder) {
-      return res.status(400).json({ error: "Folder with this name already exists for the user" });
+      return res
+        .status(400)
+        .json({ error: "Folder with this name already exists for the user" });
     }
 
-    const newFolder = await FolderForDb.create({ name: folderName, owner: userId });
+    const newFolder = await FolderForDb.create({
+      name: folderName,
+      owner: userId,
+    });
 
     res.json({ message: "Folder added successfully", folder: newFolder });
   } catch (error) {
@@ -202,10 +200,9 @@ app.post("/addFolder", async (req, res) => {
   }
 });
 
-
 app.get("/getFolders", async (req, res) => {
   try {
-    const folders = await FolderForDb.find({owner:globalUserID});
+    const folders = await FolderForDb.find({ owner: globalUserID });
 
     res.json(folders);
   } catch (error) {
@@ -214,12 +211,11 @@ app.get("/getFolders", async (req, res) => {
   }
 });
 
-
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   UserModel.findOne({ email: email }).then((user) => {
     if (user) {
-      globalUserID = user._id; 
+      globalUserID = user._id;
       if (user.password === password) {
         res.json("Success");
       } else {
@@ -249,14 +245,14 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-
-
 app.post("/shareFolder", async (req, res) => {
   try {
     const { folderId, userEmail } = req.body;
 
     if (!folderId || !userEmail) {
-      return res.status(400).json({ error: "Folder ID or user email is missing" });
+      return res
+        .status(400)
+        .json({ error: "Folder ID or user email is missing" });
     }
 
     const folder = await FolderForDb.findById(folderId);
@@ -272,7 +268,9 @@ app.post("/shareFolder", async (req, res) => {
     }
 
     if (user.sharedFolders.includes(folderId)) {
-      return res.status(400).json({ error: "Folder already shared with the user" });
+      return res
+        .status(400)
+        .json({ error: "Folder already shared with the user" });
     }
 
     user.sharedFolders.push(folderId);
@@ -286,38 +284,86 @@ app.post("/shareFolder", async (req, res) => {
   }
 });
 
-
-app.get('/getSharedFolders', async (req, res) => {
+app.get("/getSharedFolders", async (req, res) => {
   try {
-
     if (!globalUserID) {
-      return res.status(400).json({ error: 'User ID is missing in the request' });
+      return res
+        .status(400)
+        .json({ error: "User ID is missing in the request" });
     }
 
     // Fetch shared folders based on the user ID
     const user = await UserModel.findById(globalUserID);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
-    const sharedFolders = await FolderForDb.find({ _id: { $in: user.sharedFolders } });
+    const sharedFolders = await FolderForDb.find({
+      _id: { $in: user.sharedFolders },
+    });
 
     // Populate each shared folder with details from the files collection
     const populatedFolders = await Promise.all(
       sharedFolders.map(async (folder) => {
-        const populatedFiles = await FileModel.find({ _id: { $in: folder.files } });
-        return { folderId: folder._id, folderName: folder.name, files: populatedFiles };
+        const populatedFiles = await FileModel.find({
+          _id: { $in: folder.files },
+        });
+        return {
+          folderId: folder._id,
+          folderName: folder.name,
+          files: populatedFiles,
+        };
       })
     );
 
     res.json(populatedFolders);
   } catch (error) {
-    console.error('Error fetching shared folders:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching shared folders:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+app.get("/getSharedFoldersOfUserByEmail", async (req, res) => {
+  const { userEmail } = req.body;
+  try {
+    if (!globalUserID) {
+      return res
+        .status(400)
+        .json({ error: "User ID is missing in the request" });
+    }
+
+    // Fetch shared folders based on the user ID
+    const user = await UserModel.findById(userEmail);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const sharedFolders = await FolderForDb.find({
+      _id: { $in: user.sharedFolders },
+    });
+
+    // Populate each shared folder with details from the files collection
+    const populatedFolders = await Promise.all(
+      sharedFolders.map(async (folder) => {
+        const populatedFiles = await FileModel.find({
+          _id: { $in: folder.files },
+        });
+        return {
+          folderId: folder._id,
+          folderName: folder.name,
+          files: populatedFiles,
+        };
+      })
+    );
+
+    res.json(populatedFolders);
+  } catch (error) {
+    console.error("Error fetching shared folders:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.listen(3001, () => {
   console.log("Server Is Running");

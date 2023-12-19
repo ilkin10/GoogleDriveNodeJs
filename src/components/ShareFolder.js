@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 function ConditionalRendering({ folder_, onClose_ }) {
-  
   const [sharedFolders, setSharedFolders] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
   const [users, setUsers] = useState([]);
@@ -20,11 +19,14 @@ function ConditionalRendering({ folder_, onClose_ }) {
     try {
       // Make a GET request to fetch shared folders
       const response = await axios.get(
-        `http://localhost:3001/getSharedFolders`
+        `http://localhost:3001/getSharedFoldersOfUserByEmail`,
+        {
+          userEmail: selectedUser,
+        }
       );
 
       setSharedFolders(response.data);
-      console.log("AA: ",sharedFolders)
+      console.log("AA: ", sharedFolders);
     } catch (error) {
       console.error("Error fetching shared folders:", error);
     }
@@ -33,7 +35,6 @@ function ConditionalRendering({ folder_, onClose_ }) {
     // Fetch shared folders when the component mounts
     fetchSharedFolders();
   }, []);
-
 
   useEffect(() => {
     // Fetch users when the component mounts
@@ -78,7 +79,6 @@ function ConditionalRendering({ folder_, onClose_ }) {
         return;
       }
 
-      
       // Make a POST request to share the folder with the selected user
       await axios.post("http://localhost:3001/shareFolder", {
         folderId: folder_,
@@ -109,7 +109,7 @@ function ConditionalRendering({ folder_, onClose_ }) {
 
       {selectedUser &&
         (selectedUser.sharedFolders &&
-        sharedFolders.map((folder)=> folder.folderId===folder_)? (
+        sharedFolders.map((folder) => folder.folderId === folder_) ? (
           <button onClick={handleUnShare}>Unshare</button>
         ) : (
           <button onClick={handleShare}>Share</button>
