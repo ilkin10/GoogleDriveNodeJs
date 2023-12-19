@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function ShareFolder({ onClose }) {
+export default function ShareFolder({ folder, onClose }) {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
 
@@ -25,10 +25,23 @@ export default function ShareFolder({ onClose }) {
 
   const handleShare = async () => {
     try {
-      // Implement the logic to share the folder with the selected user
-      // You may need to make a POST request to your server with the folder ID and selected user ID
-      // Example: await axios.post("http://localhost:3001/shareFolder", { folderId: folder._id, userId: selectedUser });
-      console.log("Share logic goes here");
+      if (!folder) {
+        console.error("Folder ID is missing");
+        return;
+      }
+      if (!selectedUser) {
+        console.error("User is missing");
+        return;
+      }
+      // Make a POST request to share the folder with the selected user
+      await axios.post("http://localhost:3001/shareFolder", {
+        folderId: folder,
+        userEmail: selectedUser,
+      });
+
+      // Display an alert when the folder is shared successfully
+      alert("Folder shared successfully");
+
       onClose(); // Close the share dialog after sharing
     } catch (error) {
       console.error("Error sharing folder:", error);

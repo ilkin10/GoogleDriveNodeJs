@@ -159,7 +159,7 @@ export default function Folder({ folder, onDelete }) {
 
       {isShareDialogOpen && (
         <div>
-          <ShareFolder onClose={closeShareDialog} />
+          <ShareFolder folder={folder._id} onClose={closeShareDialog} />
         </div>
       )}
     </div>

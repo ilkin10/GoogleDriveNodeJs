@@ -249,6 +249,76 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+
+
+app.post("/shareFolder", async (req, res) => {
+  try {
+    const { folderId, userEmail } = req.body;
+
+    if (!folderId || !userEmail) {
+      return res.status(400).json({ error: "Folder ID or user email is missing" });
+    }
+
+    const folder = await FolderForDb.findById(folderId);
+
+    if (!folder) {
+      return res.status(404).json({ error: "Folder not found" });
+    }
+
+    const user = await UserModel.findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.sharedFolders.includes(folderId)) {
+      return res.status(400).json({ error: "Folder already shared with the user" });
+    }
+
+    user.sharedFolders.push(folderId);
+
+    await user.save();
+
+    res.status(200).json({ message: "Folder shared with user successfully" });
+  } catch (error) {
+    console.error("Error sharing folder:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+app.get('/getSharedFolders', async (req, res) => {
+  try {
+
+    if (!globalUserID) {
+      return res.status(400).json({ error: 'User ID is missing in the request' });
+    }
+
+    // Fetch shared folders based on the user ID
+    const user = await UserModel.findById(globalUserID);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const sharedFolders = await FolderForDb.find({ _id: { $in: user.sharedFolders } });
+
+    // Populate each shared folder with details from the files collection
+    const populatedFolders = await Promise.all(
+      sharedFolders.map(async (folder) => {
+        const populatedFiles = await FileModel.find({ _id: { $in: folder.files } });
+        return { folderId: folder._id, folderName: folder.name, files: populatedFiles };
+      })
+    );
+
+    res.json(populatedFolders);
+  } catch (error) {
+    console.error('Error fetching shared folders:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 app.listen(3001, () => {
   console.log("Server Is Running");
 });
