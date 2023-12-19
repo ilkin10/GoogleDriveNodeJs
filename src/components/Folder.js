@@ -5,14 +5,16 @@ import dots from "../images/icons8-menu-vertical-64.png";
 import "./Folder.css";
 import File from "./File";
 import AddFolder from "./AddFolder";
+import ShareFolder from "./ShareFolder"; // Import the new ShareFolder component
 
 export default function Folder({ folder, onDelete }) {
   const [isFilesOpen, setIsFilesOpen] = useState(false);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isAddFileDialogOpen, setIsAddFileDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false); // New state for share dialog
   const [selectedFile, setSelectedFile] = useState(null);
   const [folderName, setFolderName] = useState("");
-  const [files, setFiles] = useState([]); // State to store files
+  const [files, setFiles] = useState([]);
 
   const toggleFiles = () => {
     setIsFilesOpen(!isFilesOpen);
@@ -30,13 +32,9 @@ export default function Folder({ folder, onDelete }) {
     }
   };
 
-
-  
   const handleDeleteFile = (deletedFileId) => {
-    // Update the state to remove the deleted file
     setFiles((prevFiles) => prevFiles.filter((file) => file._id !== deletedFileId));
   };
-
 
   const handleDelete = async () => {
     if (!folder._id) {
@@ -58,9 +56,16 @@ export default function Folder({ folder, onDelete }) {
 
   const closeAddFileDialog = () => {
     setIsAddFileDialogOpen(false);
-    // Reset all the data when closing the dialog
     setSelectedFile(null);
     setFolderName("");
+  };
+
+  const openShareDialog = () => {
+    setIsShareDialogOpen(true);
+  };
+
+  const closeShareDialog = () => {
+    setIsShareDialogOpen(false);
   };
 
   const onFileChange = (event) => {
@@ -77,19 +82,17 @@ export default function Folder({ folder, onDelete }) {
         console.error("No file selected");
         return;
       }
-  
+
       const formData = new FormData();
       formData.append("file", selectedFile);
       formData.append("folderId", folder._id);
-  
+
       const response = await axios.post("http://localhost:3001/uploadFile", formData);
-  
+
       if (response.status === 200) {
         alert("File uploaded successfully");
-        // Reset all the data after successful upload
         setSelectedFile(null);
         setFolderName("");
-        // Fetch updated files after successful upload
         fetchFiles();
       } else if (response.status === 400) {
         alert("File with this name already exists in the folder");
@@ -100,8 +103,7 @@ export default function Folder({ folder, onDelete }) {
       console.error("Error uploading file:", error);
     }
   };
-  
-  // Function to fetch files for the current folder
+
   const fetchFiles = async () => {
     try {
       const response = await axios.get(`http://localhost:3001/getFiles?folderId=${folder._id}`);
@@ -112,7 +114,6 @@ export default function Folder({ folder, onDelete }) {
   };
 
   useEffect(() => {
-    // Fetch files when the component mounts
     fetchFiles();
   }, [folder._id]);
 
@@ -124,9 +125,8 @@ export default function Folder({ folder, onDelete }) {
 
       {isFilesOpen && (
         <div className="files">
-          {/* Map over the files and render File component for each */}
           {files.map((file) => (
-            <File key={file._id} file={file} onDelete={handleDeleteFile}/>
+            <File key={file._id} file={file} onDelete={handleDeleteFile} />
           ))}
         </div>
       )}
@@ -136,7 +136,9 @@ export default function Folder({ folder, onDelete }) {
           <button className="btn btn-danger button" onClick={handleDelete}>
             Delete Folder
           </button>
-          <button className="btn btn-primary button">Share</button>
+          <button className="btn btn-primary button" onClick={openShareDialog}>
+            Share
+          </button>
           <button className="btn btn-success button" onClick={openAddFileDialog}>
             Add File
           </button>
@@ -152,6 +154,12 @@ export default function Folder({ folder, onDelete }) {
             onFolderNameChange={onFolderNameChange}
             onFileUpload={onFileUpload}
           />
+        </div>
+      )}
+
+      {isShareDialogOpen && (
+        <div>
+          <ShareFolder onClose={closeShareDialog} />
         </div>
       )}
     </div>

@@ -81,6 +81,20 @@ app.get("/getFiles", async (req, res) => {
   }
 });
 
+
+
+
+app.get("/getUsers", async (req, res) => {
+  try {
+    const users = await UserModel.find({ _id: { $ne: globalUserID } }); // Exclude the user with the globalUserID
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 app.post("/uploadFile", upload.single("file"), async (req, res) => {
   try {
     const { originalname, mimetype, buffer } = req.file;
