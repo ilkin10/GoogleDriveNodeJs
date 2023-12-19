@@ -325,8 +325,8 @@ app.get("/getSharedFolders", async (req, res) => {
 });
 
 app.get("/getSharedFoldersOfUserByEmail", async (req, res) => {
-  const { userEmail } = req.body;
   try {
+    const { userEmail } = req.body;
     if (!globalUserID) {
       return res
         .status(400)
