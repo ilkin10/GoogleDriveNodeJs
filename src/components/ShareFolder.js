@@ -38,7 +38,6 @@ export default function ShareFolder({ onClose }) {
   return (
     <div className="share-folder">
       <h3>Share Folder</h3>
-      <label>Select User:</label>
       <select onChange={onUserChange} value={selectedUser}>
         <option value="">Select User</option>
         {users.map((user) => (
