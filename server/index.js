@@ -334,7 +334,7 @@ app.get("/getSharedFoldersOfUserByEmail", async (req, res) => {
     }
 
     // Fetch shared folders based on the user ID
-    const user = await UserModel.findById(userEmail);
+    const user = await UserModel.find(userEmail);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
