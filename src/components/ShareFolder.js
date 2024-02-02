@@ -26,14 +26,20 @@ function ConditionalRendering({ folder_, onClose_ }) {
       );
 
       setSharedFolders(response.data);
+
       console.log("AA: ", response.data);
+      console.log("AA: ", selectedUser);
+      console.log("AA: ", sharedFolders);
+
     } catch (error) {
       console.error("Error fetching shared folders:", error);
     }
   };
   useEffect(() => {
-    // Fetch shared folders when the component mounts
-    fetchSharedFolders();
+    // Fetch shared folders when selectedUser changes
+    if (selectedUser) {
+      fetchSharedFolders();
+    }
   }, []);
 
   useEffect(() => {
