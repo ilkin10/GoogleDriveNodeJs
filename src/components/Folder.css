@@ -12,24 +12,25 @@
     margin: 20px;
     /* Add some margin around the folder */
     position: relative;
-        margin: 20px;
+    margin: 20px;
 }
 
 /* Styling for the folder's title (h2) */
 .folder>h2 {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px 10px 10px 10px;
     /* Adjust padding as needed */
-    margin: 0;
+    margin: -5px;
     /* Remove default margin for h2 */
     color: #721c24;
     /* Text color for folder title */
     cursor: pointer;
-        transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 /* Style the folder images */
 .folder>img {
+    display: inline-block; /* Display images inline */
     width: 32px;
     /* Adjust the width of the image */
     height: auto;
@@ -53,4 +54,3 @@
 .folder h2:active {
     transform: scale(0.8);
 }
-

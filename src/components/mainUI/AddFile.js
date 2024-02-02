@@ -45,7 +45,7 @@ const AddFile = () => {
       </form>
       {error && <div className="error-message">{error}</div>}
       {success && (
-        <div className="success-message">Folder added successfully!</div>
+        <div style={{color: "white"}} className="success-message">Folder added successfully!</div>
       )}
     </div>
   );

@@ -7,8 +7,8 @@ import File from "./File";
 import AddFolder from "./AddFolder";
 import ShareFolder from "./ShareFolder"; // Import the new ShareFolder component
 
-export default function Folder({ folder, onDelete }) {
-  const [isFilesOpen, setIsFilesOpen] = useState(false);
+  export default function Folder({ folder, onDelete }) {
+    const [isFilesOpen, setIsFilesOpen] = useState(false);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isAddFileDialogOpen, setIsAddFileDialogOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false); // New state for share dialog
@@ -119,6 +119,9 @@ export default function Folder({ folder, onDelete }) {
 
   return (
     <div className="folder">
+      <div className="folder-sec-1"></div>
+      <div className="folder-sec-2"></div>
+      <div className="folder-sec-3"></div>
       <img src={folderIcon} alt="foldericon" onClick={toggleFiles} />
       <h2 onClick={toggleFiles}>{folder.name}</h2>
       <img src={dots} alt="dots" onClick={toggleSideMenu} />
@@ -139,7 +142,10 @@ export default function Folder({ folder, onDelete }) {
           <button className="btn btn-primary button" onClick={openShareDialog}>
             Share
           </button>
-          <button className="btn btn-success button" onClick={openAddFileDialog}>
+          <button
+            className="btn btn-success button"
+            onClick={openAddFileDialog}
+          >
             Add File
           </button>
         </div>

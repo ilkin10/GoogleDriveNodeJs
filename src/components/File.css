@@ -17,6 +17,10 @@
   height: auto;
   margin: 0;
   color: #721c24;
+  max-width: 200px; /* Set a maximum width for the file name */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide any overflow text */
+  text-overflow: ellipsis; /* Display an ellipsis (...) when text overflows */
 }
 
 .file > img {
