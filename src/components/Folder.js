@@ -33,7 +33,9 @@ export default function Folder({ folder, onDelete }) {
   };
 
   const handleDeleteFile = (deletedFileId) => {
-    setFiles((prevFiles) => prevFiles.filter((file) => file._id !== deletedFileId));
+    setFiles((prevFiles) =>
+      prevFiles.filter((file) => file._id !== deletedFileId)
+    );
   };
 
   const handleDelete = async () => {
@@ -75,6 +77,42 @@ export default function Folder({ folder, onDelete }) {
   const onFolderNameChange = (event) => {
     setFolderName(event.target.value);
   };
+  const downloadAllFiles = async () => {
+    try {
+      if (!folder._id) {
+        console.error("Folder ID is missing");
+        return;
+      }
+  
+      const response = await fetch(`http://localhost:3000/download/${folder._id}`);
+  
+      if (!response.ok) {
+        console.error("Error downloading folder:", response.statusText);
+        return;
+      }
+  
+      const blob = await response.blob();
+  
+      // Create a download link
+      const a = document.createElement("a");
+      a.href = window.URL.createObjectURL(blob);
+      a.download = `${folder.name}.zip`;
+      document.body.appendChild(a);
+  
+      // Trigger a click on the download link
+      a.click();
+  
+      // Remove the download link from the DOM after a short delay (e.g., 2 seconds)
+      setTimeout(() => {
+        document.body.removeChild(a);
+        // Revoke the Object URL to free up resources
+        window.URL.revokeObjectURL(a.href);
+      }, 2000); // 2000 milliseconds (2 seconds)
+    } catch (error) {
+      console.error("Error downloading folder:", error);
+    }
+  };
+  
 
   const onFileUpload = async () => {
     try {
@@ -87,7 +125,10 @@ export default function Folder({ folder, onDelete }) {
       formData.append("file", selectedFile);
       formData.append("folderId", folder._id);
 
-      const response = await axios.post("http://localhost:3001/uploadFile", formData);
+      const response = await axios.post(
+        "http://localhost:3001/uploadFile",
+        formData
+      );
 
       if (response.status === 200) {
         alert("File uploaded successfully");
@@ -106,7 +147,9 @@ export default function Folder({ folder, onDelete }) {
 
   const fetchFiles = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/getFiles?folderId=${folder._id}`);
+      const response = await axios.get(
+        `http://localhost:3001/getFiles?folderId=${folder._id}`
+      );
       setFiles(response.data);
     } catch (error) {
       console.error("Error fetching files:", error);
@@ -134,13 +177,19 @@ export default function Folder({ folder, onDelete }) {
       {isSideMenuOpen && (
         <div className="side-menu">
           <button className="btn btn-danger button" onClick={handleDelete}>
-            Delete Folder
+            Delete
           </button>
           <button className="btn btn-primary button" onClick={openShareDialog}>
             Share
           </button>
-          <button className="btn btn-success button" onClick={openAddFileDialog}>
+          <button
+            className="btn btn-success button"
+            onClick={openAddFileDialog}
+          >
             Add File
+          </button>
+          <button className="btn btn-success button" onClick={downloadAllFiles}>
+            Download
           </button>
         </div>
       )}

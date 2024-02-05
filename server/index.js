@@ -6,7 +6,10 @@ const multer = require("multer");
 const UserModel = require("./models/User");
 const FileModel = require("./models/File");
 const FolderForDb = require("./models/FolderForDb");
-
+const fs = require('fs');
+const path = require('path');
+const archiver = require('archiver');
+const { Buffer } = require('buffer'); // Import the 'Buffer' class
 const app = express();
 app.use(express.json());
 
@@ -55,6 +58,51 @@ app.delete("/deleteFile/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+
+
+app.get('/download/:folderId', async (req, res) => {
+  const folderId = req.params.folderId;
+
+  try {
+    const folder = await FolderForDb.findById(folderId);
+    if (!folder) {
+      return res.status(404).json({ error: 'Folder not found' });
+    }
+
+    const files = folder.files; // Assuming 'files' is the array field in your Folder model
+
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // Sets the compression level.
+    });
+
+    archive.pipe(res);
+
+    for (const fileId of files) {
+      const file = await FileModel.findById(fileId);
+      if (!file) {
+        console.log(`File with ID ${fileId} not found. Skipping.`);
+        continue; // Skip to the next iteration if the file is not found
+      }
+
+      // Append the Binary data to the zip archive
+      archive.append(file.data, { name: file.name });
+    }
+
+    // Finalize the zip archive and send it
+    archive.finalize();
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
+
 
 app.get("/getFiles", async (req, res) => {
   try {
