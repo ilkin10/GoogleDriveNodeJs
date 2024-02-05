@@ -26,8 +26,11 @@ function ConditionalRendering({ folder_, onClose_ }) {
       );
 
       setSharedFolders(response.data);
+
+      console.log("AA: ", response.data);
       console.log("AA: ", selectedUser);
       console.log("AA: ", sharedFolders);
+
     } catch (error) {
       console.error("Error fetching shared folders:", error);
     }
@@ -111,9 +114,9 @@ function ConditionalRendering({ folder_, onClose_ }) {
       </select>
 
       {selectedUser &&
-        (selectedUser.sharedFolders &&
-        sharedFolders.map((folder) => folder.folderId === folder_) ? (
-          <button onClick={handleUnShare}>Unshare</button>
+        (
+        sharedFolders.map((folder) => folder._id === folder_) ? (
+          <button onClick={handleShare}>Share</button>
         ) : (
           <button onClick={handleShare}>Share</button>
         ))}

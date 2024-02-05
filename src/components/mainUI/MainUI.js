@@ -7,7 +7,7 @@ import AddFile from "./AddFile.js";
 
 export default function MainUI() {
   return (
-      <div>
+      <div style={{backgroundColor: '#282c34', height:"100vh"}}>
         <NavBar></NavBar>
         
         <Routes>
