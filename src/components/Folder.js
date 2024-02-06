@@ -83,15 +83,18 @@ import ShareFolder from "./ShareFolder"; // Import the new ShareFolder component
         console.error("Folder ID is missing");
         return;
       }
+      
+      const response = await axios.get(`http://localhost:3001/downloadzip/${folder._id}`, {
+        responseType: 'blob' // Set the response type to 'blob' to handle binary data
+      });
   
-      const response = await fetch(`http://localhost:3000/download/${folder._id}`);
-  
-      if (!response.ok) {
+      if (response.status !== 200) {
         console.error("Error downloading folder:", response.statusText);
         return;
       }
   
-      const blob = await response.blob();
+      // Access the response data, which should be the ZIP archive
+      const blob = new Blob([response.data], { type: 'application/zip' });
   
       // Create a download link
       const a = document.createElement("a");
@@ -108,12 +111,12 @@ import ShareFolder from "./ShareFolder"; // Import the new ShareFolder component
         // Revoke the Object URL to free up resources
         window.URL.revokeObjectURL(a.href);
       }, 2000); // 2000 milliseconds (2 seconds)
+      
     } catch (error) {
       console.error("Error downloading folder:", error);
     }
   };
   
-
   const onFileUpload = async () => {
     try {
       if (!selectedFile) {

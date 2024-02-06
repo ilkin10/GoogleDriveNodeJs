@@ -11,6 +11,7 @@ const path = require('path');
 const archiver = require('archiver');
 const { Buffer } = require('buffer'); // Import the 'Buffer' class
 const app = express();
+const stream = require('stream');
 app.use(express.json());
 
 app.use(cors());
@@ -62,37 +63,48 @@ app.delete("/deleteFile/:id", async (req, res) => {
 
 
 
-
-app.get('/download/:folderId', async (req, res) => {
+app.get('/downloadzip/:folderId', async (req, res) => {
   const folderId = req.params.folderId;
 
   try {
+    // Find the folder by ID
     const folder = await FolderForDb.findById(folderId);
     if (!folder) {
       return res.status(404).json({ error: 'Folder not found' });
     }
 
-    const files = folder.files; // Assuming 'files' is the array field in your Folder model
+    // Get the array of file IDs from the folder
+    const files = folder.files;
 
+    // Create a ZIP archive
     const archive = archiver('zip', {
       zlib: { level: 9 } // Sets the compression level.
     });
 
+    // Pipe the archive to the response stream
     archive.pipe(res);
 
+    // Iterate over each file ID and append its data to the archive
     for (const fileId of files) {
       const file = await FileModel.findById(fileId);
       if (!file) {
         console.log(`File with ID ${fileId} not found. Skipping.`);
-        continue; // Skip to the next iteration if the file is not found
+        continue;
       }
 
-      // Append the Binary data to the zip archive
-      archive.append(file.data, { name: file.name });
+      // Append the file data to the archive with its name
+      const fileStream = new stream.PassThrough();
+      fileStream.end(file.data); // Assuming file.data is a buffer containing the file data
+      archive.append(fileStream, { name: file.name });
     }
 
-    // Finalize the zip archive and send it
-    archive.finalize();
+    // Finalize the archive
+    await archive.finalize();
+
+    // Close the response stream once the archive is finalized
+    res.on('close', () => {
+      console.log('ZIP archive download finished');
+    });
 
   } catch (error) {
     console.error('Error:', error);
